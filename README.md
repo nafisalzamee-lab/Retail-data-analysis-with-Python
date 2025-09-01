@@ -1,6 +1,7 @@
 # Retail-data-analysis-with-Python
 Overview
-This project demonstrates an end-to-end data analysis workflow on a real-world e-commerce dataset, focusing on exploratory data analysis (EDA), customer segmentation, and performance optimization for large datasets. Utilizing a dataset of half a million sales transactions from a UK-based online retailer, the project uncovers key business insights and showcases proficiency in handling big data challenges. A significant aspect of this project involves scaling the analysis to 32 million records using the FireDucks library, highlighting its efficiency compared to traditional Pandas for large-scale data processing s s .
+This project demonstrates an end-to-end data analysis workflow on a real-world e-commerce dataset, focusing on exploratory data analysis (EDA), customer segmentation, and performance optimization for large datasets. Utilizing a dataset of half a million sales transactions from a UK-based online retailer, the project uncovers key business insights and showcases proficiency in handling big data challenges. A significant aspect of this project involves scaling the analysis to 32 million records using the FireDucks library, highlighting its efficiency compared to traditional Pandas for large-scale data processing  .
+
 Key Features & Methodologies
 Data Acquisition & Loading:
 Sourced a dataset of approximately 500,000 sales transactions from a UK online retailer, including details such as Invoice Number, Stock Code, Description, Quantity, Invoice Date, Unit Price, and Customer ID s s .
