@@ -6,7 +6,7 @@
 
 [![YouTube](https://img.shields.io/badge/Watch%20on-YouTube-red?logo=youtube)](https://youtu.be/X4ee_lMhEmU)
 [![Open in Google Colab](https://img.shields.io/badge/Open%20in-Google%20Colab-orange?logo=google-colab&logoColor=white)](https://colab.research.google.com/drive/1_sIrZl3di1wIzYqxE0XNcqWqlMiLKISS?usp=sharing)
-
+[![Connect with me on LinkedIn](https://img.shields.io/badge/Connect%20with%20me-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/md-nafis-al-zamee-a88a9024b)
 [![Watch the video](Video%20thumbnail.png)](https://youtu.be/X4ee_lMhEmU)
 
 ---
@@ -336,3 +336,5 @@ This compilation of findings with their corresponding code and visualizations pr
 
 You can view and run the full project implementation in Google Colab here:  
 [Open in Google Colab](https://colab.research.google.com/drive/1_sIrZl3di1wIzYqxE0XNcqWqlMiLKISS?usp=sharing)
+
+[![Connect with me on LinkedIn](https://img.shields.io/badge/Connect%20with%20me-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/md-nafis-al-zamee-a88a9024b)
