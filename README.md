@@ -43,3 +43,26 @@ df1 = pd.read_excel('Online Retail.xlsx', dtype=dtype_dict)
 print(df1.shape)
 print(df1.dtypes)
 df1.head()
+
+### 2. Robust Data Cleaning & Preprocessing
+
+* **Missing Value Imputation**: Replaced missing `Description` values by finding the most frequent description per `StockCode` and using it for imputation.
+
+```python
+# Identify missing descriptions
+missing_desc = df1['Description'].isnull().sum()
+
+# Get most frequent description per StockCode
+most_frequent = df1.groupby('StockCode')['Description'] \.agg(lambda x: x.mode().iloc[0] if not x.mode().empty else None) \.reset_index() \.rename(columns={'Description': 'FrequentDescription'})
+
+# Merge with original DataFrame
+df2 = df1.merge(most_frequent, on='StockCode', how='left')
+
+# Replace Description with FrequentDescription
+df2['Description'] = df2['FrequentDescription']
+
+# Drop helper column
+df2.drop(columns=['FrequentDescription'], inplace=True)
+
+# Drop rows with any remaining null descriptions
+df2.dropna(subset=['Description'], inplace=True)
