@@ -6,7 +6,7 @@
 
 [![YouTube](https://img.shields.io/badge/Watch%20on-YouTube-red?logo=youtube)](https://youtu.be/X4ee_lMhEmU)
 
-[![Watch the video](https://img.youtube.com/vi/X4ee_lMhEmU/maxresdefault.jpg)](https://youtu.be/X4ee_lMhEmU)
+[![Watch the video](Video%20thumbnail.png)](https://youtu.be/X4ee_lMhEmU)
 
 ---
 ## 📊 Overview
