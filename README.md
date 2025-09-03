@@ -20,7 +20,7 @@ A significant aspect of this project involves scaling the analysis utilizing the
 
 ## Data Set Details
 
-The dataset used in the project contains approximately half a million records with the following columns:
+Got the dataset from UC Irvine public data repository.The dataset used in the project contains approximately half a million records with the following columns:
 
 *   **Invoice Number**
 *   **Stock Code** (Product ID)
