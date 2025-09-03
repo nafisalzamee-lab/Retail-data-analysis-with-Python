@@ -5,6 +5,7 @@
 ![Matplotlib](https://img.shields.io/badge/Matplotlib-11557c?style=for-the-badge&logo=matplotlib&logoColor=white)
 
 [![YouTube](https://img.shields.io/badge/Watch%20on-YouTube-red?logo=youtube)](https://youtu.be/X4ee_lMhEmU)
+[![Open in Google Colab](https://img.shields.io/badge/Open%20in-Google%20Colab-orange?logo=google-colab&logoColor=white)](https://colab.research.google.com/drive/1_sIrZl3di1wIzYqxE0XNcqWqlMiLKISS?usp=sharing)
 
 [![Watch the video](Video%20thumbnail.png)](https://youtu.be/X4ee_lMhEmU)
 
@@ -269,9 +270,6 @@ Sales were initially lower but significantly increased in the last few months of
 
 **Code and Visualization:**
 
-```python
-
-```
 ![Monthly Sales](monthly%20sales%20i.png)
 
 ---
@@ -283,9 +281,6 @@ The UK contributes approximately 84.6% of total sales, indicating high market de
 
 **Code and Visualization:**
 
-```python
-
-```
 ![Sales by Country](sales%20by%20country.png)
 
 ---
@@ -297,8 +292,6 @@ The top-selling product ("Postage") accounts for only about 1.9% to 2% of total 
 
 **Code and Visualization:**
 
-```python
-```
 ![Top 5 Products](top%205%20products.png)   
 
 ---
@@ -310,8 +303,6 @@ Customers segmented by Recency, Frequency, and Monetary (RFM) scores reveal valu
 
 **Code and Visualization:**
 
-```python
-```
 ![RFM Score](rfm%20score.png)
 
 ---
@@ -319,12 +310,9 @@ Customers segmented by Recency, Frequency, and Monetary (RFM) scores reveal valu
 ### 5. Customer Churn Indicators
 
 **Finding:**  
-Customers with Recency greater than 90 days are likely churned. Identifying these customers enables targeted retention efforts such as promotional offers.
+Customers with Recency greater than 90 days are likely churned.Total number of Churned Customers are 1449. Identifying these customers enables targeted retention efforts such as promotional offers.
 
 **Code and Visualization:**
-
-```python
-```
 
 ![Customer Churn Distribution](churn%20distribution.png)
     
@@ -343,3 +331,8 @@ This project not only provides actionable business insights into sales trends an
 ---
 
 This compilation of findings with their corresponding code and visualizations provides a clear, practical understanding of how the insights were derived in the project.
+
+## Google Colab Notebook
+
+You can view and run the full project implementation in Google Colab here:  
+[Open in Google Colab](https://colab.research.google.com/drive/1_sIrZl3di1wIzYqxE0XNcqWqlMiLKISS?usp=sharing)
