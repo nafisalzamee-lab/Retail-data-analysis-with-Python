@@ -42,7 +42,8 @@ dtype_dict = {
 df1 = pd.read_excel('Online Retail.xlsx', dtype=dtype_dict)
 print(df1.shape)
 print(df1.dtypes)
-df1.head()```
+df1.head()
+```python
 
 ### 2. Robust Data Cleaning & Preprocessing
 
