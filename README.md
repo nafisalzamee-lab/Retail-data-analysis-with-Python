@@ -63,17 +63,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Loading the Excel file into a DataFrame with explicit dtypes
-dtype_dict = {
-    'InvoiceNo': str,
-    'StockCode': str,
-    'Description': str,
-    'Quantity': int,
-    'CustomerID': str
-}
-df1 = pd.read_excel('Online Retail.xlsx', dtype=dtype_dict)
+df1 = pd.read_excel('Online Retail.xlsx',dtype={'InvoiceNo':'string','StockCode':'string','Description':'string','Country':'string'})
+df1.head(3)
 print(df1.shape)
-print(df1.dtypes)
-df1.head()
+df1.info()
 ```
 
 ### 2. Robust Data Cleaning & Preprocessing
@@ -81,43 +74,44 @@ df1.head()
 * **Missing Value Imputation**: Replaced missing `Description` values by finding the most frequent description per `StockCode` and using it for imputation.
 
 ```python
-# Identify missing descriptions
-missing_desc = df1['Description'].isnull().sum()
+# Identifying missing descriptions
+df1[df1['Description'].isnull()].head()
 
-# Get most frequent description per StockCode
-most_frequent = df1.groupby('StockCode')['Description'] \
-    .agg(lambda x: x.mode().iloc[0] if not x.mode().empty else None) \
-    .reset_index() \
-    .rename(columns={'Description': 'FrequentDescription'})
+# Getting most frequent description per StockCode using value_counts()
+most_freq=df1[['StockCode','Description']].value_counts().reset_index()
+most_freq
 
-# Merge with original DataFrame
-df2 = df1.merge(most_frequent, on='StockCode', how='left')
+# Merging with original DataFrame using .merge()
+most_freq.columns=['StockCode','freq_Description','Count']
+df2=df1.merge(most_freq,on='StockCode',how='left')
+df2.head(3)
 
-# Replace Description with FrequentDescription
-df2['Description'] = df2['FrequentDescription']
+# Replacing  Description with FrequentDescription to get rid of the missing descriotions
 
-# Drop helper column
-df2.drop(columns=['FrequentDescription'], inplace=True)
+df2['Description']=df2['freq_Description']
+df2.isnull().sum()
 
-# Drop rows with any remaining null descriptions
+# Dropping helper columns from the main dataframe using dropna()
+df2.drop(columns=['freq_Description','Count'],inplace=True)
+
+# Dropping rows with any remaining null descriptions
 df2.dropna(subset=['Description'], inplace=True)
+df2.isnull().sum()
 ```
 
-* **Handling Invalid Entries**: Removed records with negative `Quantity` or `Unit Price` values, identified as errors.
+* **Handling Invalid Values**: Removed records with negative `Quantity` or `Unit Price` values, identified as errors.
 
 ```python
-# Filter out negative Quantity and Unit Price
-df3 = df2[(df2['Quantity'] > 0) & (df2['UnitPrice'] > 0)]
+# Removing negative or zero quantities & prices
+df3=df2[(df2['Quantity']>0) & (df2['UnitPrice']>0)]
+df3.describe()
 ```
 
 * **Outlier Consideration**: Examined extreme `Quantity` values and retained them based on business context (e.g., wholesale orders).
 
 ```python
-# Check 99th percentile for Quantity
-quantile_99 = df3['Quantity'].quantile(0.99)
-
-# Optionally filter out extreme outliers beyond 99th percentile
-# df3 = df3[df3['Quantity'] <= quantile_99]
+# Checking 99th percentile for Quantity
+df3.Quantity.quantile(.9999)
 ```
 
 ### 3. Feature Engineering for Enhanced Analysis
@@ -126,14 +120,15 @@ quantile_99 = df3['Quantity'].quantile(0.99)
 
 ```python
 df4 = df3.copy()
-df4['TotalSales'] = df4['Quantity'] * df4['UnitPrice']
+df4['Total Sales']=df4['Quantity']*df4['UnitPrice']
 ```
 
 * Extracted the `Month` from `InvoiceDate` for time-based trend analysis.
 
 ```python
-df4['InvoiceDate'] = pd.to_datetime(df4['InvoiceDate'])
-df4['Month'] = df4['InvoiceDate'].dt.month
+# Derived the number of month for ''Month' column from invoice date applying Pandas Date time accessor .dt.month on it.
+df4['Month']=df4['InvoiceDate'].dt.month
+df4.sample(3)
 ```
 
 ### 4. Exploratory Data Analysis (EDA) & Visualization
@@ -141,39 +136,66 @@ df4['Month'] = df4['InvoiceDate'].dt.month
 * **Monthly Sales Trend Analysis**: Grouped sales by month and plotted trends.
 
 ```python
-monthly_sales = df4.groupby('Month')['TotalSales'].sum()
+# Calculating monthly sales using groupby() function
+monthly_sales=df4.groupby('Month')['Total Sales'].sum()
+monthly_sales
 
-plt.figure(figsize=(10,6))
-monthly_sales.plot(kind='line', marker='o')
-plt.title('Monthly Sales Trend')
+# Plotting  line chart using plot() function
+monthly_sales.plot(kind='line',title='Monthly total Sales Trend',marker='o',grid=True)
 plt.xlabel('Month')
 plt.ylabel('Total Sales')
-plt.grid(True)
 plt.show()
 ```
 
 * **Geographical Sales Distribution**: Analyzed top countries by total sales and their percentage contributions.
 
 ```python
-country_sales = df4.groupby('Country')['TotalSales'].sum().sort_values(ascending=False)
-top5_countries = country_sales.head(5)
+#Using groupby() countries & then using sort_values() function to get the top 5 country
+top_5_country=df4.groupby('Country')['Total Sales'].sum().sort_values(ascending=False).head(5)
+top_5_country
 
-# Calculate percentage contribution
-total_sales_sum = country_sales.sum()
-percentage_contrib = (top5_countries / total_sales_sum) * 100
+# Calculating percentage contribution of each country to total sales
+country_sales=df4.groupby('Country')['Total Sales'].sum()
+total_sales=country_sales.sum()
+top_5_country=df4.groupby('Country')['Total Sales'].sum().sort_values(ascending=False).head(5)
+percentage=(top_5_country/total_sales)*100
 
-# Plot horizontal bar chart
-percentage_contrib.plot(kind='barh', figsize=(10,6), color='skyblue')
-plt.title('Top 5 Countries by Sales Percentage')
+# Plotting bar chart to show percentage contribution to total sales by Country
+plt.figure(figsize=(10,6))
+plt.barh(percentage.index,percentage.values)
 plt.xlabel('Percentage of Total Sales')
+plt.ylabel('Country')
+plt.title('Top 5 Countries by Percentage Contribution to Total Sales')
 plt.show()
 ```
 
 * **Product Performance Analysis**: Identified top-selling products by `StockCode` and `Description`.
 
 ```python
-top_products = df4.groupby(['StockCode', 'Description'])['TotalSales'].sum().sort_values(ascending=False).head(5)
-print(top_products)
+#Finding out Top 5 products based on total sales grouping by 'StockCode' & then using sort_values() function to get the top 5 country
+product_wisesales=df4.groupby('StockCode')['Total Sales'].sum()
+top_5_products=df4.groupby('StockCode')['Total Sales'].sum().sort_values(ascending=False).head(5)
+
+#Printing the description of the top 5 products using foor loop & f""
+for stock_code in top_5_products.index:
+  description=df4[df4.StockCode==stock_code].Description.iloc[0]
+  print(f"{stock_code}==>{description}")
+
+#Plottin Bar chart to show  top 5 products by Percentage of contribution to total Sales
+plt.figure(figsize=(10,6))
+bars=plt.barh(percentages.index,percentages.values)
+plt.xlabel('Percentage of Total Sales')
+plt.ylabel('Stock Code')
+plt.title('Top 5 Products by Percentage Contribution to Total Sales')
+plt.grid(axis='x')
+
+
+# Adding percentage labels to the bars
+
+for bar,percentage in zip(bars,percentages):
+  plt.text(bar.get_width()+0.5,bar.get_y()+bar.get_height()/2,f'{percentage:.1f}%',va='center')
+
+plt.show()
 ```
 
 ### 5. Advanced Customer Analytics (RFM & Churn Analysis)
@@ -181,44 +203,59 @@ print(top_products)
 * **RFM Analysis**: Calculated Recency, Frequency, and Monetary values per customer.
 
 ```python
-import datetime as dt
+#max invoice date using max() function
+df4.InvoiceDate.max()
 
-# Define current date as one day after max invoice date
-current_date = df4['InvoiceDate'].max() + pd.Timedelta(days=1)
+# Defining current date as one day after max invoice date while using Timedelta() class
+current_date=df4['InvoiceDate'].max() + pd.Timedelta(days=1)
 
-rfm = df4.groupby('CustomerID').agg({
-    'InvoiceDate': lambda x: (current_date - x.max()).days,
-    'InvoiceNo': 'nunique',
-    'TotalSales': 'sum'
-}).reset_index()
 
-rfm.columns = ['CustomerID', 'Recency', 'Frequency', 'Monetary']
+#Calculating Recency, Frequency, and Monetary values per customer using agga(),lamda x() & groupby() function
+rfm=df4.groupby('CustomerID').agg({'InvoiceDate':lambda x:(current_date - x.max()).days,
+                                   'InvoiceNo': 'count',
+                                   'Total Sales': 'sum'})
+rfm.columns=['Recency','Frequency','Monetary']
+rfm.head()
 ```
 
-* Created quartiles for RFM scores and calculated an overall RFM score.
+* Created quartiles for RFM scores and calculated an overall RFM score.It helped to segment customers.
 
 ```python
-rfm['R_Quartile'] = pd.qcut(rfm['Recency'], 4, labels=[4,3,2,1])
-rfm['F_Quartile'] = pd.qcut(rfm['Frequency'], 4, labels=[1,2,3,4])
-rfm['M_Quartile'] = pd.qcut(rfm['Monetary'], 4, labels=[1,2,3,4])
+rfm['R_Segment']=pd.qcut(rfm['Recency'],4,labels=[4,3,2,1])
+rfm['F_Segment']=pd.qcut(rfm['Frequency'],4,labels=[1,2,3,4])
+rfm['M_Segment']=pd.qcut(rfm['Monetary'],4,labels=[1,2,3,4])
+rfm['RFM_Score']=rfm[['R_Segment','F_Segment','M_Segment']].sum(axis=1)
 
-rfm['RFM_Score'] = rfm[['R_Quartile', 'F_Quartile', 'M_Quartile']].sum(axis=1)
+rfm.sample(5)
+
+#Customers with highest RFM Score
+rfm.sort_values('RFM_Score',ascending=False)
 ```
 
 *   **Customer Churn Analysis**: Classified customers as churned if `Recency` exceeded 90 days.
 
 ```python
-churn_threshold = 90
-rfm['Churn'] = rfm['Recency'] > churn_threshold
+#Calculating the number of days when a customer purchased for the last time from the company
+customer_last_purchase=(current_date-customer_last_purchase).dt.days
+customer_last_purchase.head(4)
+
+# defining churn thresh hold (90 days without any purchase)
+churn_thresh_hold= 90
+churned_customers=customer_last_purchase[customer_last_purchase>churn_thresh_hold]
+churned_customers.head(4)
+
+#Getting the total number of churned customers
+print("Number of Churned Customers: ",len(churned_customers))
 
 # Visualize churn distribution
-rfm['Churn'].value_counts().plot(kind='bar', color=['green', 'red'])
-plt.title('Customer Churn Distribution')
-plt.xlabel('Churned')
-plt.ylabel('Number of Customers')
+plt.figure(figsize=(10,6))
+plt.hist(customer_last_purchase,bins=50,color='red',alpha=0.7)
+plt.axvline(churn_thresh_hold,color='black',linestyle='dashed',linewidth=2)
+plt.title("Customer Churn Distribution")
+plt.xlabel('Days since last purchase')
+plt.ylabel('No. of Customers')
 plt.show()
 ```
-
 ---
 
 ## Key Findings and Insights with Python Code & Visuals
@@ -233,17 +270,7 @@ Sales were initially lower but significantly increased in the last few months of
 **Code and Visualization:**
 
 ```python
-# Grouping total sales by month
-monthly_sales = df4.groupby('Month')['TotalSales'].sum()
 
-# Plotting monthly sales trend as a line chart with markers
-plt.figure(figsize=(10,6))
-monthly_sales.plot(kind='line', marker='o')
-plt.title('Monthly Sales Trend')
-plt.xlabel('Month')
-plt.ylabel('Total Sales')
-plt.grid(True)
-plt.show()
 ```
 
 *Visual: Line chart showing monthly sales increasing sharply towards months 10, 11, and 12*   
@@ -258,21 +285,7 @@ The UK contributes approximately 84.6% of total sales, indicating high market de
 **Code and Visualization:**
 
 ```python
-# Grouping total sales by country and sorting descending
-country_sales = df4.groupby('Country')['TotalSales'].sum().sort_values(ascending=False)
 
-# Top 5 countries by sales
-top5_countries = country_sales.head(5)
-
-# Calculate percentage contribution of top 5 countries
-total_sales_sum = country_sales.sum()
-percentage_contrib = (top5_countries / total_sales_sum) * 100
-
-# Plot horizontal bar chart for percentage contribution
-percentage_contrib.plot(kind='barh', figsize=(10,6), color='skyblue')
-plt.title('Top 5 Countries by Sales Percentage')
-plt.xlabel('Percentage of Total Sales')
-plt.show()
 ```
 
 *Visual: Horizontal bar chart showing UK dominating sales percentage, followed by Netherlands and others*   
@@ -287,17 +300,6 @@ The top-selling product ("Postage") accounts for only about 1.9% to 2% of total 
 **Code and Visualization:**
 
 ```python
-# Top 5 products by total sales
-top_products = df4.groupby(['StockCode', 'Description'])['TotalSales'].sum().sort_values(ascending=False).head(5)
-
-print(top_products)
-
-# Plot percentage contribution for top 5 products
-top5_products = top_products / top_products.sum() * 100
-top5_products.plot(kind='bar', figsize=(10,6), color='lightgreen')
-plt.title('Top 5 Products by Sales Percentage')
-plt.ylabel('Percentage of Total Product Sales')
-plt.show()
 ```
 
 *Visual: Bar chart showing percentage sales contribution of top 5 products, with "Postage" around 2%*   
@@ -312,31 +314,6 @@ Customers segmented by Recency, Frequency, and Monetary (RFM) scores reveal valu
 **Code and Visualization:**
 
 ```python
-import pandas as pd
-
-# Define current date as one day after max invoice date
-current_date = df4['InvoiceDate'].max() + pd.Timedelta(days=1)
-
-# Calculate RFM metrics
-rfm = df4.groupby('CustomerID').agg({
-    'InvoiceDate': lambda x: (current_date - x.max()).days,
-    'InvoiceNo': 'nunique',
-    'TotalSales': 'sum'
-}).reset_index()
-
-rfm.columns = ['CustomerID', 'Recency', 'Frequency', 'Monetary']
-
-# Create quartiles for RFM
-rfm['R_Quartile'] = pd.qcut(rfm['Recency'], 4, labels=[4,3,2,1])
-rfm['F_Quartile'] = pd.qcut(rfm['Frequency'], 4, labels=[1,2,3,4])
-rfm['M_Quartile'] = pd.qcut(rfm['Monetary'], 4, labels=[1,2,3,4])
-
-# Calculate RFM score
-rfm['RFM_Score'] = rfm[['R_Quartile', 'F_Quartile', 'M_Quartile']].sum(axis=1)
-
-# Sort by RFM score descending
-rfm_sorted = rfm.sort_values(by='RFM_Score', ascending=False)
-print(rfm_sorted.head())
 ```
 
 *Visual: Table output showing customers with highest RFM scores (valuable customers)*   
@@ -351,27 +328,6 @@ Customers with Recency greater than 90 days are likely churned. Identifying thes
 **Code and Visualization:**
 
 ```python
-# Define churn threshold
-churn_threshold = 90
-
-# Classify churned customers
-rfm['Churn'] = rfm['Recency'] > churn_threshold
-
-# Plot churn distribution histogram
-plt.figure(figsize=(8,5))
-rfm['Recency'].hist(bins=50)
-plt.axvline(churn_threshold, color='red', linestyle='dashed', linewidth=2)
-plt.title('Recency Distribution with Churn Threshold')
-plt.xlabel('Days Since Last Purchase (Recency)')
-plt.ylabel('Number of Customers')
-plt.show()
-
-# Plot count of churned vs active customers
-rfm['Churn'].value_counts().plot(kind='bar', color=['green', 'red'])
-plt.title('Customer Churn Distribution')
-plt.xlabel('Churned')
-plt.ylabel('Number of Customers')
-plt.show()
 ```
 
 *Visuals: Histogram of Recency with 90-day threshold and bar chart of churned vs active customers*    
