@@ -272,8 +272,7 @@ Sales were initially lower but significantly increased in the last few months of
 ```python
 
 ```
-
-*Visual: Line chart showing monthly sales increasing sharply towards months 10, 11, and 12*   
+![Monthly Sales](monthly%20sales%20i.png)
 
 ---
 
@@ -287,8 +286,7 @@ The UK contributes approximately 84.6% of total sales, indicating high market de
 ```python
 
 ```
-
-*Visual: Horizontal bar chart showing UK dominating sales percentage, followed by Netherlands and others*   
+![Sales by Country](sales%20by%20country.png)
 
 ---
 
@@ -301,8 +299,7 @@ The top-selling product ("Postage") accounts for only about 1.9% to 2% of total 
 
 ```python
 ```
-
-*Visual: Bar chart showing percentage sales contribution of top 5 products, with "Postage" around 2%*   
+![Top 5 Products](top%205%20products.png)   
 
 ---
 
@@ -315,8 +312,7 @@ Customers segmented by Recency, Frequency, and Monetary (RFM) scores reveal valu
 
 ```python
 ```
-
-*Visual: Table output showing customers with highest RFM scores (valuable customers)*   
+![RFM Score](rfm%20score.png)
 
 ---
 
@@ -330,7 +326,8 @@ Customers with Recency greater than 90 days are likely churned. Identifying thes
 ```python
 ```
 
-*Visuals: Histogram of Recency with 90-day threshold and bar chart of churned vs active customers*    
+![Customer Churn Distribution](churn%20distribution.png)
+    
 
 ---
 
