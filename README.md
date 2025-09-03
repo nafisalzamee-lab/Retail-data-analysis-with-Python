@@ -4,6 +4,8 @@
 ![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
 ![Matplotlib](https://img.shields.io/badge/Matplotlib-11557c?style=for-the-badge&logo=matplotlib&logoColor=white)
 
+[![YouTube](https://img.shields.io/badge/Watch%20on-YouTube-red?logo=youtube)](https://youtu.be/X4ee_lMhEmU)
+
 [![Watch the video](https://img.youtube.com/vi/X4ee_lMhEmU/maxresdefault.jpg)](https://youtu.be/X4ee_lMhEmU)
 
 ---
